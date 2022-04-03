@@ -1,84 +1,120 @@
-import React, { useState  } from 'react';
-import clsx from 'clsx';
-import { makeStyles } from '@material-ui/core/styles';
-import Drawer from '@material-ui/core/Drawer';
-import styled from 'styled-components';
-import TextField from '@material-ui/core/TextField';
+import React, { useState, useEffect } from "react";
+import clsx from "clsx";
+import { makeStyles } from "@material-ui/core/styles";
+import Drawer from "@material-ui/core/Drawer";
+import styled from "styled-components";
+import TextField from "@material-ui/core/TextField";
 import { auth } from "./firebase";
-const Div = styled.div`font-family: sans-serif;`;
+const Div = styled.div`
+  font-family: sans-serif;
+`;
 
 const useStyles = makeStyles({
   list: {
-    width: 450
+    width: 450,
   },
   fullList: {
-    width: 'auto'
-  }
+    width: "auto",
+  },
 });
 
 export default function RegisterDrawer() {
-
   const classes = useStyles();
-  const [phNo, setPhNo] = useState('');
-  const [error, setError] = useState('');
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [phNo, setPhNo] = useState("");
+  const [error, setError] = useState("");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [state, setState] = React.useState({
-    bottom: false
+    bottom: false,
   });
 
+  const [usersRegistered, setusersRegistered] = useState([]);
+  const [count, setcount] = useState(false);
+
+  const getRegistered = () => {
+    fetch(`https://server-swiggy.herokuapp.com/users/`)
+      .then((res) => res.json())
+      .then((data) => setusersRegistered([...data]));
+  };
+
+  useEffect(() => {
+    getRegistered();
+  }, []);
 
   const handleSubmit = () => {
-        const obj = {
-          user_name: name,
-          phone_num: phNo,
-          email: email,
-          password: password
-        }
-        console.log(obj);
-    if(obj.user_name === "" || obj.phone_num === "" || obj.password === "" || obj.email === "" ){
-             alert("Please fill all the credentials");
-           }
-           else{
-             fetch("https://server-swiggy.herokuapp.com/users/", {
-               method: 'POST',
-               body: JSON.stringify(obj),
-               headers: {
-                 "content-type" : "application/json"
-               }
-             }).then(alert("Signedup successfully"))
-             .then(() => {
-               setState({ ...state, right: false });
-               setError('');
-             }).then()
-             .catch(error => {
-               setError(error.message);
-               console.error("Error signing in with password and email", error);
-             });
-           }
-  }
+    const obj = {
+      user_name: name,
+      phone_num: phNo,
+      email: email,
+      password: password,
+    };
+    console.log(usersRegistered);
+    usersRegistered.map((e) => {
+      if (e.phone_num === obj.phone_num) {
+        setcount(true);
+      }
+    });
+    
+    if(count){
+      alert("User is already registered");
+    }else{
+      if (
+        obj.user_name === "" ||
+        obj.phone_num === "" ||
+        obj.password === "" ||
+        obj.email === ""
+      ) {
+        alert("Please fill all the credentials");
+      } else {
+        fetch("https://server-swiggy.herokuapp.com/users/", {
+          method: "POST",
+          body: JSON.stringify(obj),
+          headers: {
+            "content-type": "application/json",
+          },
+        }).then(() => {setcount(false)})
+          .then(() => {
+            setState({ ...state, right: false });
+            setError("");
+          })
+          .then()
+          .catch((error) => {
+            setError(error.message);
+            console.error("Error signing in with password and email", error);
+          });
+      }
+    }
+
+  };
   const toggleDrawer = (anchor, open) => (event) => {
-    if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+    if (
+      event.type === "keydown" &&
+      (event.key === "Tab" || event.key === "Shift")
+    ) {
       return;
     }
 
     setState({ ...state, [anchor]: open });
-    setError('');
+    setError("");
   };
 
   const list = (anchor) => (
     <div
       className={clsx(classes.list, {
-        [classes.fullList]: anchor === 'top' || anchor === 'bottom'
+        [classes.fullList]: anchor === "top" || anchor === "bottom",
       })}
       style={{ right: 0 }}
       role="presentation"
     >
-      <Div className="container mt-3" style={{ width: '90%' }}>
+      <Div className="container mt-3" style={{ width: "90%" }}>
         <Div className="row">
           <Div className="col text-left">
-            <button type="button" className="btn btn-sm" onClick={toggleDrawer(anchor, false)}>
+            <button
+              type="button"
+              className="btn btn-sm"
+              onClick={toggleDrawer(anchor, false)}
+            >
               <i className="fas fa-times fa-lg" />
             </button>
             <div className="container mt-2">
@@ -86,17 +122,17 @@ export default function RegisterDrawer() {
                 <div className="col-lg-6 ml-3">
                   <h3>Sign up</h3>
                   <small>
-                    or <b style={{ color: '#fc8019' }}>login to your account</b>
+                    or <b style={{ color: "#fc8019" }}>login to your account</b>
                   </small>
                 </div>
                 <div className="col-lg-4 ml-3">
                   <img
                     className="img-fluid"
                     style={{
-                      width: '105px',
-                      height: '100px',
-                      borderRadius: '50%',
-                      fload: 'right'
+                      width: "105px",
+                      height: "100px",
+                      borderRadius: "50%",
+                      fload: "right",
                     }}
                     src="https://res.cloudinary.com/swiggy/image/upload/fl_lossy,f_auto,q_auto/Image-login_btpq7r"
                     alt="logo of wrap"
@@ -112,9 +148,9 @@ export default function RegisterDrawer() {
                       fullWidth
                       variant="outlined"
                       style={{
-                        marginLeft: '0px',
-                        borderRadius: '0px',
-                        marginTop: '15px'
+                        marginLeft: "0px",
+                        borderRadius: "0px",
+                        marginTop: "15px",
                       }}
                       onChange={(e) => {
                         setPhNo(e.target.value);
@@ -128,9 +164,9 @@ export default function RegisterDrawer() {
                       fullWidth
                       variant="outlined"
                       style={{
-                        marginLeft: '0px',
-                        borderRadius: '0px',
-                        marginTop: '15px'
+                        marginLeft: "0px",
+                        borderRadius: "0px",
+                        marginTop: "15px",
                       }}
                       onChange={(e) => {
                         setName(e.target.value);
@@ -145,9 +181,9 @@ export default function RegisterDrawer() {
                       fullWidth
                       variant="outlined"
                       style={{
-                        marginLeft: '0px',
-                        borderRadius: '0px',
-                        marginTop: '15px'
+                        marginLeft: "0px",
+                        borderRadius: "0px",
+                        marginTop: "15px",
                       }}
                       onChange={(e) => {
                         setEmail(e.target.value);
@@ -163,9 +199,9 @@ export default function RegisterDrawer() {
                       fullWidth
                       variant="outlined"
                       style={{
-                        marginLeft: '0px',
-                        borderRadius: '0px',
-                        marginTop: '15px'
+                        marginLeft: "0px",
+                        borderRadius: "0px",
+                        marginTop: "15px",
                       }}
                       onChange={(e) => {
                         setPassword(e.target.value);
@@ -176,55 +212,55 @@ export default function RegisterDrawer() {
                   <div className="col-lg-12 mt-3">
                     <small
                       style={{
-                        color: '#5d8ed5',
-                        marginLeft: '1%',
-                        fontWeight: 'bold'
+                        color: "#5d8ed5",
+                        marginLeft: "1%",
+                        fontWeight: "bold",
                       }}
                     >
                       Have a referral code
-										</small>
+                    </small>
                   </div>
                   <div>
                     <small
                       style={{
-                        fontSize: '9px',
-                        fontWeight: 'bold'
+                        fontSize: "9px",
+                        fontWeight: "bold",
                       }}
                       className="text-muted mx-3"
                     >
-                      By creating an account, I accept the{' '}
+                      By creating an account, I accept the{" "}
                       <small
                         style={{
-                          color: '#5d8ed5',
-                          fontSize: '9px',
-                          fontWeight: 'bold'
+                          color: "#5d8ed5",
+                          fontSize: "9px",
+                          fontWeight: "bold",
                         }}
                       >
                         Terms & Conditions
-											</small>
+                      </small>
                     </small>
                   </div>
-                  <div className='col-lg-12 text-center'>{error}</div>
-                  <div className='col-lg-12 text-center'>
+                  <div className="col-lg-12 text-center">{error}</div>
+                  <div className="col-lg-12 text-center">
                     <button
                       style={{
-                        background: '#fc8019',
-                        border: '1px solid #fc8019',
-                        color: 'white',
-                        marginTop: '15px',
-                        width: '318px',
-                        borderRadius: '2%',
+                        background: "#fc8019",
+                        border: "1px solid #fc8019",
+                        color: "white",
+                        marginTop: "15px",
+                        width: "318px",
+                        borderRadius: "2%",
                       }}
                       onClick={handleSubmit}
                     >
                       <p
                         style={{
-                          fontWeight: 'bold',
-                          marginTop: '9px',
+                          fontWeight: "bold",
+                          marginTop: "9px",
                         }}
                       >
                         SignUp
-                                            </p>
+                      </p>
                     </button>
                   </div>
                 </div>
@@ -238,21 +274,27 @@ export default function RegisterDrawer() {
 
   return (
     <div>
-      { <button
-        type="button"
-        className=" btn btn-lg align-self-center font-weight-bold"
-        onClick={toggleDrawer('right', true)}
-        style={{
-          borderRadius: '0px',
-          color: 'white',
-          backgroundColor: 'black',
-          marginBottom : '10px',
-        }}
+      {
+        <button
+          type="button"
+          className=" btn btn-lg align-self-center font-weight-bold"
+          onClick={toggleDrawer("right", true)}
+          style={{
+            borderRadius: "0px",
+            color: "white",
+            backgroundColor: "black",
+            marginBottom: "10px",
+          }}
+        >
+          {"Sign up"}
+        </button>
+      }
+      <Drawer
+        anchor={"right"}
+        open={state["right"]}
+        onClose={toggleDrawer("right", false)}
       >
-        {'Sign up'}
-      </button>}
-      <Drawer anchor={'right'} open={state['right']} onClose={toggleDrawer('right', false)}>
-        {list('right')}
+        {list("right")}
       </Drawer>
     </div>
   );
