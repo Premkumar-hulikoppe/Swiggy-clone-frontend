@@ -27,6 +27,8 @@ export default function AuthLoginDrawer() {
   const [usersData, setusersData] = useState({});
   const isAuth = useSelector((store) => store.login.isAuth);
   const dispatch = useDispatch();
+   const [counter, setcounter] = useState(0);
+
   const getData = () => {
     fetch("https://server-swiggy.herokuapp.com/users/")
       .then((res) => res.json())
@@ -53,11 +55,15 @@ export default function AuthLoginDrawer() {
     usersData.map((e) => {
       if (e.phone_num === email) {
         dispatch(addUser(e));
-        fetch(`https://phone-num-verify.herokuapp.com/login?phonenumber=91${email}&channel=sms`);
-        fetch(`https://phone-num-verify.herokuapp.com/verify?phonenumber=91${email}&code=${password}`).then(() => {    
-          dispatch(addAuth());  
-          alert("User Logged in successfully");
-        })
+        if(counter === 0){
+          fetch(`https://phone-num-verify.herokuapp.com/login?phonenumber=91${email}&channel=sms`);
+          setcounter((pre) => (pre + 1));
+        }else{
+          fetch(`https://phone-num-verify.herokuapp.com/verify?phonenumber=91${email}&code=${password}`).then(() => {    
+            dispatch(addAuth());  
+            alert("User Logged in successfully");
+          })
+        }
       }
     });
 
