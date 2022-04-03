@@ -8,7 +8,7 @@ import { auth } from "./firebase";
 import { addUser } from "../../../../Redux/User/action.js";
 import { addAuth } from "../../../../Redux/User/action.js";
 import { useSelector, useDispatch } from "react-redux";
-import {Navigate} from "react-router-dom";
+import { Navigate } from "react-router-dom";
 
 const Div = styled.div`
   font-family: sans-serif;
@@ -27,7 +27,7 @@ export default function AuthLoginDrawer() {
   const [usersData, setusersData] = useState({});
   const isAuth = useSelector((store) => store.login.isAuth);
   const dispatch = useDispatch();
-   const [counter, setcounter] = useState(0);
+  const [counter, setcounter] = useState(0);
 
   const getData = () => {
     fetch("https://server-swiggy.herokuapp.com/users/")
@@ -50,19 +50,25 @@ export default function AuthLoginDrawer() {
   });
 
   const handleSubmit = (e) => {
-    email === "" ? alert("Please enter Mobile Number") : setclicked(true);
+    if (email === "") {
+      alert("Please enter Mobile Number");
+    }
 
     usersData.map((e) => {
       if (e.phone_num === email) {
         dispatch(addUser(e));
-        if(counter === 0){
-          fetch(`https://phone-num-verify.herokuapp.com/login?phonenumber=91${email}&channel=sms`);
-          setcounter((pre) => (pre + 1));
-        }else{
-          fetch(`https://phone-num-verify.herokuapp.com/verify?phonenumber=91${email}&code=${password}`).then(() => {    
-            dispatch(addAuth());  
-            alert("User Logged in successfully");
-          })
+        if (counter === 0) {
+          fetch(
+            `https://phone-num-verify.herokuapp.com/login?phonenumber=91${email}&channel=sms`
+          );
+          setclicked(true);
+          setcounter((pre) => pre + 1);
+        } else {
+          fetch(
+            `https://phone-num-verify.herokuapp.com/verify?phonenumber=91${email}&code=${password}`
+          ).then(() => {
+            dispatch(addAuth());
+          });
         }
       }
     });
@@ -203,13 +209,14 @@ export default function AuthLoginDrawer() {
         </Div>
       </Div>
     </div>
-  ); 
+  );
   console.log(isAuth);
-    
-     if(isAuth === "Yes"){
-       return <Navigate to = {"/restaurants"} ></Navigate>
-     }
-     return (
+
+  if (isAuth === "Yes") {
+    alert("User Logged in successfully");
+    return <Navigate to={"/restaurants"}></Navigate>;
+  }
+  return (
     <div>
       {
         <button
