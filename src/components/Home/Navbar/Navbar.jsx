@@ -50,7 +50,7 @@ const Div1 = styled.div`
 `;
 
 const Div2 = styled.div`
-  width: 60%;
+  width: 70%;
   display: flex;
   justify-content: space-around;
   align-items: center;
@@ -63,7 +63,7 @@ const Icon = styled.img`
 `;
 
 const Items = styled.div`
-  width: 18%;
+  width: 25%;
   height: 100%;
   display: flex;
   align-items: center;
