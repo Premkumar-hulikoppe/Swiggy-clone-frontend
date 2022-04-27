@@ -103,10 +103,11 @@ export default function VerticalTabs() {
   }
 
   const getUserData = () => {
-    fetch(`https://server-swiggy.herokuapp.com/users/${userLogged._id}`).then((res) => (res.json()))
+    fetch(`https://server-swiggy.herokuapp.com/users/${userLogged._id}`)
+    .then((res) => (res.json()))
     .then((data) => (dispatch(addUser(data))));
   }
- console.log(userLogged)
+
   useEffect(() => {
   getDishData();
   }, [])
@@ -179,15 +180,18 @@ export default function VerticalTabs() {
 
             <FlexMain>
               <Item2 src={e.image}></Item2>
-              <Button onClick = {() => {dispatch(addCart(e._id));
-              fetch(`https://server-swiggy.herokuapp.com/users/${e._id}`, {
+              <Button onClick = {() => {
+                dispatch(addCart(e._id));
+                console.log(userLogged)
+              fetch(`https://server-swiggy.herokuapp.com/users/${userLogged._id}`, {
                 method: "PATCH",
-                body: JSON.stringify({...userLogged}),
+                body: JSON.stringify(userLogged),
                 headers: {
                   "content-type": "application/json"
                 }
               })
-              .then(() => {getUserData()}).then(() => {alert("Item added to cart successfully")})
+              .then(() => {getUserData()})
+              .then(alert("Item added to your cart successfully"))
             }}
                 variant="outlined"
                 style={{

@@ -56,6 +56,7 @@ export default function AuthLoginDrawer() {
 
     usersData.map((e) => {
       if (e.phone_num === email) {
+        console.log(e.password)
         dispatch(addUser(e));
         if (counter === 0) {
           fetch(
